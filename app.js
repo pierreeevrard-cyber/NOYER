@@ -52,9 +52,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (data.eligible) {
+        // ✅ Cas éligible
         status.style.color = "#7bd88f";
         status.textContent = "✅ Éligible ! Votre site semble compatible.";
+
+        // Redirection vers la page 2 avec les URLs dans les paramètres
+        setTimeout(() => {
+          const params = new URLSearchParams({
+            page_url: urlInput.value.trim(),
+            example_url: exampleInput.value.trim(),
+          });
+          window.location.href = `page2.html?${params.toString()}`;
+        }, 1500);
+
       } else {
+        // ❌ Cas non éligible
         status.style.color = "#ff6b6b";
         status.textContent = `❌ Non éligible. ${data.reason || ""}`.trim();
       }
