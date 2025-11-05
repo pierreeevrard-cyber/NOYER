@@ -23,7 +23,6 @@
 
     <section class="card">
       <form id="extra-form" class="form-grid">
-
         <!-- 🏢 Nom de l'agence -->
         <div class="field-group full-width">
           <label>🏢 Nom de votre agence</label>
@@ -79,6 +78,55 @@
     </footer>
   </main>
 
+  <!-- Ton script de gestion du formulaire -->
   <script src="page2.js"></script>
+
+  <!-- === Stripe Checkout Integration === -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    // ⚠️ Remplace par ta clé publique Stripe
+    const stripe = Stripe("pk_live_TA_CLE_PUBLIQUE_ICI");
+
+    document.getElementById("sendBtn").addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const nomAgence = document.getElementById("nom_agence").value.trim();
+      const pageUrl = document.getElementById("page_url").value.trim();
+
+      // Vérifie que les champs essentiels sont remplis
+      if (!nomAgence || !pageUrl) {
+        alert("Veuillez d’abord remplir le formulaire avant de continuer.");
+        return;
+      }
+
+      try {
+        // 🔗 Envoi des infos vers ton webhook n8n pour créer une session Stripe
+        const res = await fetch("https://pierre07.app.n8n.cloud/webhook/stripe_checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nom_agence: nomAgence,
+            page_url: pageUrl
+          }),
+        });
+
+        if (!res.ok) throw new Error("Erreur lors de la communication avec le serveur.");
+
+        const session = await res.json();
+
+        if (!session.id) {
+          throw new Error("La réponse Stripe n’a pas retourné de session valide.");
+        }
+
+        // 🚀 Redirige l’utilisateur vers Stripe Checkout
+        const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
+        if (error) alert(error.message);
+
+      } catch (err) {
+        console.error(err);
+        alert("❌ Une erreur est survenue lors de la redirection vers Stripe. Réessayez plus tard.");
+      }
+    });
+  </script>
 </body>
 </html>
