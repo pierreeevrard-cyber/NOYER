@@ -23,7 +23,6 @@
 
     <section class="card">
       <form id="extra-form" class="form-grid">
-        <!-- 🏢 Nom de l'agence -->
         <div class="field-group full-width">
           <label>🏢 Nom de votre agence</label>
           <input id="nom_agence" name="nom_agence" type="text" placeholder="Ex : Agence Grandjean Immobilier" required />
@@ -78,53 +77,64 @@
     </footer>
   </main>
 
-  <!-- Ton script de gestion du formulaire -->
   <script src="page2.js"></script>
 
-  <!-- === Stripe Checkout Integration === -->
   <script src="https://js.stripe.com/v3/"></script>
   <script>
-    // ⚠️ Remplace par ta clé publique Stripe
-    const stripe = Stripe("pk_test_51SQ7b0KtSUAGLnZOQ518zmedFbxdcflIBXz0DQ9Ve7XumgSGSOcbM5GDcxe4Ct5Rh8QxcNlqXnsCJfiwFuB0KMvt00kO1VJv91");
+    const stripe = Stripe("pk_test_51SQ7b0KtSUAGLnZ0Q5lTBxz0D09veV7xumgSGSocbM5GDcxe4Ct5hR8QxcNlQxnsCJfiwFuB0kKMvt00k01VJv91");
 
     document.getElementById("sendBtn").addEventListener("click", async (e) => {
       e.preventDefault();
 
       const nomAgence = document.getElementById("nom_agence").value.trim();
       const pageUrl = document.getElementById("page_url").value.trim();
+      const exampleUrl = document.getElementById("example_url").value.trim();
+      const extraBien = document.getElementById("extra_bien").value.trim();
+      const logo = document.getElementById("logo").value.trim();
+      const photo1 = document.getElementById("photo1").value.trim();
+      const photo2 = document.getElementById("photo2").value.trim();
 
-      // Vérifie que les champs essentiels sont remplis
       if (!nomAgence || !pageUrl) {
-        alert("Veuillez d’abord remplir le formulaire avant de continuer.");
+        alert("⚠️ Merci de remplir les champs obligatoires avant de continuer.");
         return;
       }
 
       try {
-        // 🔗 Envoi des infos vers ton webhook n8n pour créer une session Stripe
-        const res = await fetch("https://pierre07.app.n8n.cloud/webhook/stripe_checkout", {
+        await fetch("https://pierre07.app.n8n.cloud/webhook/noyer_agence", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             nom_agence: nomAgence,
-            page_url: pageUrl
+            page_url: pageUrl,
+            example_url: exampleUrl,
+            extra_bien: extraBien,
+            logo: logo,
+            photo1: photo1,
+            photo2: photo2,
           }),
         });
-
-        if (!res.ok) throw new Error("Erreur lors de la communication avec le serveur.");
-
-        const session = await res.json();
-
-        if (!session.id) {
-          throw new Error("La réponse Stripe n’a pas retourné de session valide.");
-        }
-
-        // 🚀 Redirige l’utilisateur vers Stripe Checkout
-        const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
-        if (error) alert(error.message);
-
       } catch (err) {
-        console.error(err);
-        alert("❌ Une erreur est survenue lors de la redirection vers Stripe. Réessayez plus tard.");
+        console.error("Erreur n8n:", err);
+        alert("❌ Erreur lors de l’envoi des données à Noyer. Réessayez.");
+        return;
+      }
+
+      try {
+        const res = await fetch("https://noyer-eligibility.onrender.com/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await res.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error("URL de session Stripe manquante");
+        }
+      } catch (err) {
+        console.error("Erreur Stripe:", err);
+        alert("❌ Impossible d’ouvrir la page Stripe. Vérifie la connexion.");
       }
     });
   </script>
