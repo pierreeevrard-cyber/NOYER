@@ -8,28 +8,41 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+  <header class="top-bar">
+    <span class="logo-text">Noyer</span>
+  </header>
+
   <main class="container">
-    <header class="hero">
+    <section class="hero">
       <h1>Vérifiez votre site</h1>
       <p class="subtitle">
-        Noyer n’est pas adapté aux sites web affichant leurs annonces de manière dynamique.<br><br>
-        Si vous ne savez pas ce que cela signifie, pas de soucis — entrez simplement les informations ci-dessous pour savoir si votre site est éligible.
+        <strong>Noyer</strong> n’est pas adapté aux sites web affichant leurs annonces de manière dynamique.<br><br>
+        Si vous ne savez pas ce que cela signifie, pas de souci — entrez simplement les informations ci-dessous pour savoir si votre site est éligible.
       </p>
-    </header>
+    </section>
 
     <section class="card">
-      <h2>Vérification d’éligibilité</h2>
+      <h2 class="card-title">Vérification d’éligibilité</h2>
+
       <form id="eligibility-form" class="eligibility">
-        <!-- 🏢 Nom de l’agence -->
-        <input id="agencyName" name="agencyName" type="text" placeholder="Nom de votre agence (ex: Agence Grandjean Immobilier)" required />
+        <div class="form-grid">
+          <div class="field">
+            <label for="agencyName">🏢 Nom de l’agence</label>
+            <input id="agencyName" name="agencyName" type="text" placeholder="Ex : Agence Grandjean Immobilier" required />
+          </div>
 
-        <!-- 🌐 URL de la page des biens -->
-        <input id="url" name="url" type="url" placeholder="https://www.votre-agence.fr/biens" required />
+          <div class="field">
+            <label for="url">🌐 URL de la page des biens</label>
+            <input id="url" name="url" type="url" placeholder="https://www.votre-agence.fr/biens" required />
+          </div>
 
-        <!-- 🏠 URL d’un bien -->
-        <input id="exampleUrl" name="exampleUrl" type="url" placeholder="https://www.votre-agence.fr/biens/maison-123" required />
+          <div class="field">
+            <label for="exampleUrl">🏠 URL d’un bien</label>
+            <input id="exampleUrl" name="exampleUrl" type="url" placeholder="https://www.votre-agence.fr/biens/maison-123" required />
+          </div>
 
-        <button id="verifyBtn" type="submit">Vérifier</button>
+          <button id="verifyBtn" type="submit" class="btn-primary">Vérifier</button>
+        </div>
       </form>
 
       <p id="status" class="status"></p>
